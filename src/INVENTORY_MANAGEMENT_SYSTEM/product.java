@@ -5,12 +5,13 @@
  */
 package INVENTORY_MANAGEMENT_SYSTEM;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import java.util.Vector;
-import javax.swing.table.DefaultTableModel;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 /**
  *
  * @author hp
@@ -22,50 +23,10 @@ public class product extends javax.swing.JFrame {
      */
     public product() {
         initComponents();
-        table_update();
-        category();
-        brand();
     }
     
     Connection con1;
     PreparedStatement pst;
-    
-    
-    public class CategoryItem
-    {
-        int id;
-        String name;
-        
-        public CategoryItem(int id,String name)
-        {
-            this.id = id;
-            this.name = name;  
-        }
-        public String toString()
-        {
-            return name;
-        }
-    
-    }
-    
-    
-    
-     public class BrandItem
-    {
-        int id;
-        String name;
-        
-        public BrandItem(int id,String name)
-        {
-            this.id = id;
-            this.name = name;  
-        }
-        public String toString()
-        {
-            return name;
-        }
-    
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,110 +36,6 @@ public class product extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     
     
-    private void category()
-    {
-    
-        try {
-             Class.forName("java.sql.DriverManager");
-             con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-             pst = con1.prepareStatement("select * from category");
-             ResultSet rs = pst.executeQuery();
-             txtcat.removeAllItems();
-              while(rs.next())
-              {
-                  txtcat.addItem(new CategoryItem(rs.getInt(1),rs.getString(2)));
-              }
-             
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
-        }
-               
-    
-    }
-    
-    private void brand()
-    {
-    
-        try {
-             Class.forName("java.sql.DriverManager");
-             con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-             pst = con1.prepareStatement("select * from brand");
-             ResultSet rs = pst.executeQuery();
-             txtbrand.removeAllItems();
-              while(rs.next())
-              {
-                  txtbrand.addItem(new BrandItem(rs.getInt(1),rs.getString(2)));
-              }
-             
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
-        }
-               
-    
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-     private void table_update() 
-    {
-        try {
-            int c;
-            try {
-                Class.forName("java.sql.DriverManager");
-                con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-                pst = con1.prepareStatement("select p.id,p.product,p.description,c.category,b.brand,p.cost_price,p.retail_price,p.qty,p.barcode,p.status from product p,category c,brand b where p.cat_id=c.id and p.brand_id=b.id");
-               ResultSet rs = pst.executeQuery();
-                
-                ResultSetMetaData rsd = rs.getMetaData();
-                c = rsd.getColumnCount();
-                
-                DefaultTableModel d = (DefaultTableModel)jTable1.getModel();
-                d.setRowCount(0);
-                
-                while(rs.next())
-                {
-                    Vector v2 = new Vector();
-                    
-                    for(int i=1;i<=c; i++)
-                    {
-                        v2.add(rs.getString("id"));
-                        v2.add(rs.getString("product"));
-                        v2.add(rs.getString("description"));
-                        v2.add(rs.getString("category"));
-                        v2.add(rs.getString("brand"));
-                        v2.add(rs.getString("cost_price"));
-                        v2.add(rs.getString("retail_price"));
-                        v2.add(rs.getString("qty"));
-                        v2.add(rs.getString("barcode"));
-                        v2.add(rs.getString("status"));   
-                    }
-                    d .addRow(v2);
-                }
-                
-                
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-            }
-          
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
-    }
-    
-    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -186,6 +43,7 @@ public class product extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -207,10 +65,10 @@ public class product extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        txtdesc = new javax.swing.JTextArea();
+        textdesc = new javax.swing.JTextArea();
         jLabel17 = new javax.swing.JLabel();
-        txtcat = new javax.swing.JComboBox();
-        txtbrand = new javax.swing.JComboBox();
+        txtcat = new javax.swing.JComboBox<>();
+        txtbrand = new javax.swing.JComboBox<>();
         txtretailp = new javax.swing.JTextField();
         txtcostp = new javax.swing.JTextField();
         txtqty = new javax.swing.JTextField();
@@ -223,49 +81,26 @@ public class product extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1200, 750));
 
         jPanel1.setBackground(new java.awt.Color(255, 102, 51));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel3.setText("BRAND");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
-            }
-        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel4.setText("POS");
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
-            }
-        });
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
+        jLabel5.setText("EXIT");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
-        jLabel6.setText("CATEGORY");
-        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel6MouseClicked(evt);
-            }
-        });
+        jLabel6.setText("CATAGORY");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel2.setText("PRODUCT");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
-            }
-        });
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel8.setText("CASHIER");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -274,13 +109,14 @@ public class product extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(26, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 66, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -298,8 +134,10 @@ public class product extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(439, Short.MAX_VALUE))
         );
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 40)); // NOI18N
@@ -309,7 +147,6 @@ public class product extends javax.swing.JFrame {
         jLabel9.setText("PRODUCT");
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Product", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Times New Roman", 1, 18))); // NOI18N
-        jPanel2.setPreferredSize(new java.awt.Dimension(1200, 700));
 
         jLabel10.setText("Product");
 
@@ -331,20 +168,10 @@ public class product extends javax.swing.JFrame {
         });
 
         jButton2.setText("Edit");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         jButton3.setText("Delete");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
 
-        jLabel12.setText("Category");
+        jLabel12.setText("Catagory");
 
         jLabel13.setText("Brand");
 
@@ -354,13 +181,17 @@ public class product extends javax.swing.JFrame {
 
         jLabel18.setText("Qty");
 
-        jLabel19.setText("Product code");
+        jLabel19.setText("Barcode");
 
-        txtdesc.setColumns(20);
-        txtdesc.setRows(5);
-        jScrollPane2.setViewportView(txtdesc);
+        textdesc.setColumns(20);
+        textdesc.setRows(5);
+        jScrollPane2.setViewportView(textdesc);
 
         jLabel17.setText("Description");
+
+        txtcat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        txtbrand.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         txtretailp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -380,7 +211,11 @@ public class product extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(385, 385, 385))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -403,27 +238,21 @@ public class product extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel19))
-                        .addGap(7, 7, 7))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addContainerGap(162, Short.MAX_VALUE)
-                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(385, 385, 385)))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(txtstatus, javax.swing.GroupLayout.Alignment.LEADING, 0, 188, Short.MAX_VALUE)
                         .addComponent(txtbarcode, javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(txtqty, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtretailp, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3)))
-                .addGap(60, 60, 60))
+                        .addComponent(txtretailp, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -473,14 +302,14 @@ public class product extends javax.swing.JFrame {
                         .addGap(25, 25, 25)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
-                            .addComponent(jButton3)
-                            .addComponent(jButton2)))
+                            .addComponent(jButton2)
+                            .addComponent(jButton3)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
                             .addComponent(txtcostp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(69, Short.MAX_VALUE))
+                .addGap(22, 47, Short.MAX_VALUE))
         );
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -499,11 +328,6 @@ public class product extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -514,22 +338,22 @@ public class product extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(jLabel9)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(65, 65, 65)
-                                .addComponent(jLabel9))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(45, 45, 45)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 906, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 908, Short.MAX_VALUE))))
-                        .addContainerGap(20, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(119, 119, 119)
-                        .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGap(93, 93, 93)
+                                .addComponent(jLabel1)
+                                .addGap(0, 126, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -540,10 +364,10 @@ public class product extends javax.swing.JFrame {
                 .addGap(30, 30, 30)
                 .addComponent(jLabel9)
                 .addGap(25, 25, 25)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(425, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -552,57 +376,30 @@ public class product extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        String product = txtpro.getText();
-        String desc = txtdesc.getText();
-        CategoryItem citem = (CategoryItem)txtcat.getSelectedItem();
-        BrandItem britem = (BrandItem)txtbrand.getSelectedItem();
-        String cprice = txtcostp.getText();    
-        String rprice = txtretailp.getText();
-        String qty = txtqty.getText();
-        String barcode = txtbarcode.getText();
-        
+        String Brand = txtpro.getText();
         String status = txtstatus.getSelectedItem().toString();
         
-        
-            try {
-                Class.forName("java.sql.DriverManager");
-                con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-                pst = con1.prepareStatement("insert into product(product,description,cat_id,brand_id,cost_price,retail_price,qty,barcode,status)values(?,?,?,?,?,?,?,?,?)");
-                pst.setString(1,product );
-                pst.setString(2, desc);
-                pst.setInt(3, citem.id);
-                pst.setInt(4, britem.id);
-                pst.setString(5,cprice);
-                pst.setString(6, rprice);
-                pst.setString(7, qty);
-                pst.setString(8, barcode);
-                pst.setString(9, status);
-                
-             
-                pst.executeUpdate();
-                
-                JOptionPane.showMessageDialog(null, "Product Adddeddd");
-                
-                table_update();  
-                        
-                txtpro.setText("");
-                txtdesc.setText("");
-                txtcat.setSelectedIndex(-1);
-                txtbrand.setSelectedIndex(-1);
-                txtcostp.setText("");
-                txtretailp.setText("");
-                txtqty.setText("");
-                txtbarcode.setText("");
-                txtstatus.setSelectedIndex(-1);
-                
-                txtbrand.requestFocus();
-                
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-            Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con1 = DriverManager.getConnection("jdbc:mysql://locahost/inventory_management_system","root","");
+            pst = con1.prepareStatement("insert into category(category,status)values(?,?)");
+            pst.setString(1,Brand);
+            pst.setString(2, status);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(null,"category Adddeddd");
+            
+            txtpro.setText("");
+            txtstatus.setSelectedIndex(-1);
+            txtpro.requestFocus();
+            
+                    
+                    } catch (ClassNotFoundException ex) {
+            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(product.class.getName()).log(Level.SEVERE, null, ex);
         }
-                        
+                
+        
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -617,167 +414,6 @@ public class product extends javax.swing.JFrame {
     private void txtcostpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcostpActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtcostpActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int selectIndex = jTable1.getSelectedRow();
-        
-        int id = Integer.parseInt(d1.getValueAt(selectIndex, 0).toString());
-        
-         String product = txtpro.getText();
-        String desc = txtdesc.getText();
-        CategoryItem citem = (CategoryItem)txtcat.getSelectedItem();
-        BrandItem britem = (BrandItem)txtbrand.getSelectedItem();
-        String cprice = txtcostp.getText();    
-        String rprice = txtretailp.getText();
-        String qty = txtqty.getText();
-        String barcode = txtbarcode.getText();
-        
-        String status = txtstatus.getSelectedItem().toString();
-        
-        try {
-            Class.forName("java.sql.DriverManager");
-             con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-                pst = con1.prepareStatement("update product set product=?,description=?,cat_id=?,brand_id=?,cost_price=?,retail_price=?,qty=?,barcode=?,status=? where id=?");
-                 pst.setString(1,product );
-                pst.setString(2, desc);
-                pst.setInt(3, citem.id);
-                pst.setInt(4, britem.id);
-                pst.setString(5,cprice);
-                pst.setString(6, rprice);
-                pst.setString(7, qty);
-                pst.setString(8, barcode);
-                pst.setString(9, status);   
-                pst.setInt(10, id);
-                
-                pst.executeUpdate();
-           
-                JOptionPane.showMessageDialog(null, "product Updated");
-                
-                table_update();
-                        
-                txtpro.setText("");
-                txtdesc.setText("");
-                txtcat.setSelectedIndex(-1);
-                txtbrand.setSelectedIndex(-1);
-                txtcostp.setText("");
-                txtretailp.setText("");
-                txtqty.setText("");
-                txtbarcode.setText("");
-                txtstatus.setSelectedIndex(-1);
-                
-                txtpro.requestFocus();
-                
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-            Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-        }
-                        
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        // TODO add your handling code here:
-        
-     product p = new product();
-        this.hide();
-        p.setVisible(true);
-    }//GEN-LAST:event_jLabel2MouseClicked
-
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        // TODO add your handling code here:
-        
-         brand b = new brand();
-        this.hide();
-        b.setVisible(true);
-    }//GEN-LAST:event_jLabel3MouseClicked
-
-    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-        // TODO add your handling code here:
-        
-         Category c = new Category();
-        this.hide();
-        c.setVisible(true);
-    }//GEN-LAST:event_jLabel6MouseClicked
-
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-        
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int selectIndex = jTable1.getSelectedRow();
-        
-        txtpro.setText(d1.getValueAt(selectIndex, 1).toString());
-        txtdesc.setText(d1.getValueAt(selectIndex, 2).toString());
-        txtcat.setSelectedItem(d1.getValueAt(selectIndex, 3).toString());
-        txtbrand.setSelectedItem(d1.getValueAt(selectIndex, 4).toString());
-        txtcostp.setText(d1.getValueAt(selectIndex, 5).toString());
-        txtretailp.setText(d1.getValueAt(selectIndex, 6).toString());
-        txtqty.setText(d1.getValueAt(selectIndex, 7).toString());
-        txtbarcode.setText(d1.getValueAt(selectIndex, 8).toString());
-       
-        txtstatus.setSelectedItem(d1.getValueAt(selectIndex, 9).toString());
-        
-    }//GEN-LAST:event_jTable1MouseClicked
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int selectIndex = jTable1.getSelectedRow();
-        
-        int id = Integer.parseInt(d1.getValueAt(selectIndex, 0).toString());
-        
-         int dialogResult = JOptionPane.showConfirmDialog(null, "Do You Want To Delete The Record","Warning",JOptionPane.YES_NO_OPTION);
-         
-         if(dialogResult == JOptionPane.YES_NO_OPTION)
-         {
-         try {
-            Class.forName("java.sql.DriverManager");
-             con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory_management_system","root","");
-                pst = con1.prepareStatement("Delete from product  where id=?");
-                pst.setInt(1, id);
-                pst.executeUpdate();
-                
-                JOptionPane.showMessageDialog(null, "product Deleted");
-                
-                table_update();
-                        
-                 txtpro.setText("");
-                txtdesc.setText("");
-                txtcat.setSelectedIndex(-1);
-                txtbrand.setSelectedIndex(-1);
-                txtcostp.setText("");
-                txtretailp.setText("");
-                txtqty.setText("");
-                txtbarcode.setText("");
-                txtstatus.setSelectedIndex(-1);
-                txtpro.requestFocus();
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-           
-        cashier ch = new cashier();
-        this.hide();
-        ch.setVisible(true);
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        // TODO add your handling code here:
-        
-         login l = new login();
-        this.hide();
-        l.setVisible(true);
-    }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
      * @param args the command line arguments
@@ -835,6 +471,7 @@ public class product extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -844,11 +481,11 @@ public class product extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextArea textdesc;
     private javax.swing.JTextField txtbarcode;
-    private javax.swing.JComboBox txtbrand;
-    private javax.swing.JComboBox txtcat;
+    private javax.swing.JComboBox<String> txtbrand;
+    private javax.swing.JComboBox<String> txtcat;
     private javax.swing.JTextField txtcostp;
-    private javax.swing.JTextArea txtdesc;
     private javax.swing.JTextField txtpro;
     private javax.swing.JTextField txtqty;
     private javax.swing.JTextField txtretailp;
